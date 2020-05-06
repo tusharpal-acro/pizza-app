@@ -124,13 +124,19 @@ def currency_adjusted_pizza_data():
                 adjusted_pizza_data[index]['price'] = '{0:.2f}'.format(float(cur_price) * 0.93)
     return adjusted_pizza_data
 
+def currency_symbol():
+    if 'currency' in request.cookies:
+        if request.cookies['currency'] == 'eur':
+            return '€'
+    return '$'
+
 @app.route('/')
 def pizzas():
     cart = {}
     currency_adjusted_pizzas = currency_adjusted_pizza_data()
     if 'cart' in request.cookies:
         cart = ast.literal_eval(request.cookies['cart'])
-    return render_template('pizzas.html', pizzas_data = currency_adjusted_pizzas, cart_total = cart_total(), cart = cart)
+    return render_template('pizzas.html', pizzas_data = currency_adjusted_pizzas, cart_total = cart_total(), cart = cart, currency=currency_symbol())
 
 @app.route('/addtocart')
 def add():
@@ -165,7 +171,7 @@ def checkout():
     total = cart_total()
     if pdata == []:
         return redirect('/')
-    return render_template('checkout.html', pdata = pdata, total = total)
+    return render_template('checkout.html', pdata = pdata, total = total, currency=currency_symbol())
 
 @app.route('/continuecheckout')
 def continuecheckout():

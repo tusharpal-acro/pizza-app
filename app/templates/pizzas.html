@@ -126,7 +126,7 @@
         <strong>Fufaji Da Pizza</strong>
       </a>
       {% if cart_total > 0 %}
-        <a style="color:red"> Your cart contains {{ cart_total }} worth of delicious pizzas</a>
+        <a style="color:red"> Your cart contains {{ currency }}{{ cart_total }} worth of delicious pizzas</a>
         <a href="/checkout" class="btn btn-success" type="button">
             Checkout Now
         </a>
@@ -162,7 +162,6 @@
             <div class="col-md-4">
                 <div class="card mb-4 shadow-sm">
                 <img src="{{ pizzas_data[pizza]['image'] }}" class="bd-placeholder-img card-img-top" width="100%" height="225">
-                <!--<svg class="bd-placeholder-img card-img-top" width="100%" height="225" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice" focusable="false" role="img" aria-label="Placeholder: Thumbnail"><title>Placeholder</title><rect width="100%" height="100%" fill="#55595c"/><text x="50%" y="50%" fill="#eceeef" dy=".3em">Thumbnail</text></svg>-->
                 <div class="card-body">
                     <p>
                       <center>
@@ -170,10 +169,14 @@
                       </center>
                     </p>
                     <p class="card-text">{{ pizzas_data[pizza]['description'] }}</p>
-                    <p>Price: {{ pizzas_data[pizza]['price'] }}</p>
+                    <p>Price: {{ currency }}{{ pizzas_data[pizza]['price'] }}</p>
                     {% if not pizza in cart %}
                     <div class="d-flex justify-content-between align-items-center">
                         <a href="/addtocart?pizza={{ pizza }}" type="button" class="btn btn-danger btn-block" style="color:white">Add to Cart</a>
+                    </div>
+                    {% else %}
+                    <div class="d-flex justify-content-between align-items-center">
+                        <a href="/addtocart?pizza={{ pizza }}" type="button" class="btn btn-danger btn-block" style="color:white">Add one more</a>
                     </div>
                     {% endif %}
                 </div>
