@@ -3,6 +3,7 @@ from flask import render_template
 from flask import request
 from flask import make_response
 from flask import redirect
+import copy
 import ast
 
 app = Flask(__name__)
@@ -64,13 +65,18 @@ pizzas_data = {
     },    
 }
 
-def cookie_add_to_cart(pizza_id):
+def cookie_add_to_cart(pizza_id, remove=False):
     if 'cart' in request.cookies:
         cart = request.cookies['cart']
         cart_data = ast.literal_eval(cart)
 
         if pizza_id in cart_data:
-            cart_data[pizza_id] = cart_data[pizza_id] + 1
+            if remove == False:
+                cart_data[pizza_id] = cart_data[pizza_id] + 1
+            else:
+                cart_data[pizza_id] = cart_data[pizza_id] - 1
+                if cart_data[pizza_id] == 0:
+                    del cart_data[pizza_id]
         else:
             cart_data[pizza_id] = 1
 
@@ -83,37 +89,59 @@ def cookie_add_to_cart(pizza_id):
         )
 
 def cart_total():
+    currency_adjusted_pizzas = currency_adjusted_pizza_data()
     if 'cart' in request.cookies:
         total = 0
         data = ast.literal_eval(request.cookies['cart'])
         for pizza in data:
-            total = total + data[pizza] * float(pizzas_data[pizza]['price'])
+            total = total + data[pizza] * float(currency_adjusted_pizzas[pizza]['price'])
         return round(total, 2)
     else:
         return -1
 
 def checkout_pizzas_sidebar_data():
+    currency_adjusted_pizzas = currency_adjusted_pizza_data()
     data = ast.literal_eval(request.cookies['cart'])
     pizzas = []
 
     for pizza in data:
         pizzas.append(
             [
-                pizzas_data[pizza]['name'],
-                data[pizza] * float(pizzas_data[pizza]['price']),
+                currency_adjusted_pizzas[pizza]['name'],
+                data[pizza] * float(currency_adjusted_pizzas[pizza]['price']),
                 data[pizza]
             ]
         )
     return pizzas
 
+def currency_adjusted_pizza_data():
+    adjusted_pizza_data = copy.deepcopy(pizzas_data)
+    if 'currency' in request.cookies:
+        if request.cookies['currency'] == 'eur':
+            for index in adjusted_pizza_data:
+                cur_price = adjusted_pizza_data[index]['price']
+                adjusted_pizza_data[index]['price'] = '{0:.2f}'.format(float(cur_price) * 0.93)
+    return adjusted_pizza_data
+
 @app.route('/')
 def pizzas():
-    return render_template('pizzas.html', pizzas_data = pizzas_data, cart_total = cart_total())
+    currency_adjusted_pizzas = currency_adjusted_pizza_data()
+    cart = ast.literal_eval(request.cookies['cart'])
+    return render_template('pizzas.html', pizzas_data = currency_adjusted_pizzas, cart_total = cart_total(), cart = cart)
 
 @app.route('/addtocart')
 def add():
     pizza_id = request.args.get('pizza')
     new_cookie = cookie_add_to_cart(pizza_id)
+
+    resp = make_response(redirect('/'))
+    resp.set_cookie('cart', new_cookie)
+    return resp 
+
+@app.route('/removefromcart')
+def remove():
+    pizza_id = request.args.get('pizza')
+    new_cookie = cookie_add_to_cart(pizza_id, True)
 
     resp = make_response(redirect('/'))
     resp.set_cookie('cart', new_cookie)
@@ -131,3 +159,10 @@ def continuecheckout():
     resp.set_cookie('cart', expires=0)
     return resp
 
+@app.route('/changecurrency')
+def changecurrency():
+    currency = request.args.get('currency')
+
+    resp = make_response(redirect('/'))
+    resp.set_cookie('currency', currency)
+    return resp 

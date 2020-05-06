@@ -32,6 +32,71 @@
         }
       }
     </style>
+
+    <style>
+      .qty .count {
+          color: #000;
+          display: inline-block;
+          vertical-align: top;
+          font-size: 25px;
+          font-weight: 700;
+          line-height: 30px;
+          padding: 0 2px
+          ;min-width: 35px;
+          text-align: center;
+      }
+      .qty .plus {
+          cursor: pointer;
+          display: inline-block;
+          vertical-align: top;
+          color: white;
+          width: 30px;
+          height: 30px;
+          font: 30px/1 Arial,sans-serif;
+          text-align: center;
+          border-radius: 50%;
+          }
+      .qty .minus {
+          cursor: pointer;
+          display: inline-block;
+          vertical-align: top;
+          color: white;
+          width: 30px;
+          height: 30px;
+          font: 30px/1 Arial,sans-serif;
+          text-align: center;
+          border-radius: 50%;
+          background-clip: padding-box;
+      }
+      div {
+          text-align: center;
+      }
+      .minus:hover{
+          background-color: #717fe0 !important;
+      }
+      .plus:hover{
+          background-color: #717fe0 !important;
+      }
+      /*Prevent text selection*/
+      span{
+          -webkit-user-select: none;
+          -moz-user-select: none;
+          -ms-user-select: none;
+      }
+      input{  
+          border: 0;
+          width: 2%;
+      }
+      nput::-webkit-outer-spin-button,
+      input::-webkit-inner-spin-button {
+          -webkit-appearance: none;
+          margin: 0;
+      }
+      input:disabled{
+          background-color:white;
+      }
+               
+    </style>
     <!-- Custom styles for this template -->
     <link href="album.css" rel="stylesheet">
   </head>
@@ -61,11 +126,20 @@
         <strong>Fufaji Da Pizza</strong>
       </a>
       {% if cart_total != -1 %}
-        <a style="color:red"> Your cart contains ${{ cart_total }} worth of delicious pizzas</a>
+        <a style="color:red"> Your cart contains {{ cart_total }} worth of delicious pizzas</a>
         <a href="/checkout" class="btn btn-success" type="button">
             Checkout Now
         </a>
       {% endif %}
+      <div class="dropdown">
+        <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          Change Currency
+        </button>
+        <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+          <a class="dropdown-item" href="/changecurrency?currency=usd">USD</a>
+          <a class="dropdown-item" href="/changecurrency?currency=eur">EUR</a>
+        </div>
+      </div>
     </div>
   </div>
 </header>
@@ -96,10 +170,22 @@
                       </center>
                     </p>
                     <p class="card-text">{{ pizzas_data[pizza]['description'] }}</p>
-                    <p>Price: ${{ pizzas_data[pizza]['price'] }}</p>
+                    <p>Price: {{ pizzas_data[pizza]['price'] }}</p>
+                    {% if not pizza in cart %}
                     <div class="d-flex justify-content-between align-items-center">
                         <a href="/addtocart?pizza={{ pizza }}" type="button" class="btn btn-danger btn-block" style="color:white">Add to Cart</a>
                     </div>
+                    {% else %}
+                    <div class="qty mt-5">
+                        <a href="/removefromcart?pizza={{ pizza }}">
+                          <span class="minus bg-dark">-</span>
+                        </a>
+                        <input type="number" class="count" name="qty" value="{{ cart[pizza] }}">
+                        <a href="/addtocart?pizza={{ pizza }}">
+                          <span class="plus bg-dark">+</span>
+                        </a>
+                    </div>
+                    {% endif %}
                 </div>
                 </div>
             </div>
