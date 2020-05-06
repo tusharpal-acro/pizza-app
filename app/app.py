@@ -54,7 +54,7 @@ pizzas_data = {
         'name': 'Fufaji Special Pizza',
         'price': '8.91',
         'description': 'Dessert cotton candy apple pie topping. Sugar plum tart sugar plum. Cheesecake marzipan soufflé pie muffin chocolate cake.',
-        'image': 'https://lh3.googleusercontent.com/proxy/3zPagFGhmmaLfcihvVeErq9tuCfo_cy__-EaFAPlObnAf7viLSnCO0QDiKoaSsnEoS1KtYefXyjTwemnWjHUgKf1RkIEo3aCTua01NjeC5whNNGlNwXU42-_'
+        'image': 'https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcQMC_B0buY4enATnQfetRtXmXrSLP8MD1gH7K8K9TUxtrIM-EwW&usqp=CAU'
     },
     '9': {
         'name': 'Pizza Valentino',
