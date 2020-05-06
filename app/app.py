@@ -109,7 +109,8 @@ def checkout_pizzas_sidebar_data():
             [
                 currency_adjusted_pizzas[pizza]['name'],
                 data[pizza] * float(currency_adjusted_pizzas[pizza]['price']),
-                data[pizza]
+                data[pizza],
+                pizza
             ]
         )
     return pizzas
@@ -138,14 +139,23 @@ def add():
 
     resp = make_response(redirect('/'))
     resp.set_cookie('cart', new_cookie)
-    return resp 
+    return resp
+
+@app.route('/appendtocart')
+def append():
+    pizza_id = request.args.get('pizza')
+    new_cookie = cookie_add_to_cart(pizza_id)
+
+    resp = make_response(redirect('/checkout'))
+    resp.set_cookie('cart', new_cookie)
+    return resp
 
 @app.route('/removefromcart')
 def remove():
     pizza_id = request.args.get('pizza')
     new_cookie = cookie_add_to_cart(pizza_id, True)
 
-    resp = make_response(redirect('/'))
+    resp = make_response(redirect('/checkout'))
     resp.set_cookie('cart', new_cookie)
     return resp 
 
@@ -153,6 +163,8 @@ def remove():
 def checkout():
     pdata = checkout_pizzas_sidebar_data()
     total = cart_total()
+    if pdata == []:
+        return redirect('/')
     return render_template('checkout.html', pdata = pdata, total = total)
 
 @app.route('/continuecheckout')
