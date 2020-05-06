@@ -125,8 +125,10 @@ def currency_adjusted_pizza_data():
 
 @app.route('/')
 def pizzas():
+    cart = {}
     currency_adjusted_pizzas = currency_adjusted_pizza_data()
-    cart = ast.literal_eval(request.cookies['cart'])
+    if 'cart' in request.cookies:
+        cart = ast.literal_eval(request.cookies['cart'])
     return render_template('pizzas.html', pizzas_data = currency_adjusted_pizzas, cart_total = cart_total(), cart = cart)
 
 @app.route('/addtocart')
