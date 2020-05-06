@@ -165,6 +165,4 @@ def changecurrency():
 
     resp = make_response(redirect('/'))
     resp.set_cookie('currency', currency)
-    return resp 
-
-app.run(host='0.0.0.0', port='80', debug=True)
+    return resp
